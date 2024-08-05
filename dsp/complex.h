@@ -1,0 +1,104 @@
+#pragma once
+#include <math.h>
+
+namespace dsp {
+    /**
+     * Complex 32bit floating-point number.
+    */
+    struct Complex {
+        // TODO: Allow construction from a float
+
+        /**
+         * Compute the conjugate of the Complex number.
+        */
+        constexpr inline Complex conj() const {
+            return Complex{ re, -im };
+        }
+
+        /**
+         * Compute the phase of the Complex number normalized between -pi and pi.
+        */
+        inline float phase() const {
+            return atan2f(im, re);
+        }
+        
+        /**
+         * Compute the amplitude of the Complex number.
+        */
+        inline float amplitude() const {
+            return sqrtf(re*re + im*im);
+        }
+
+        void operator=(float b) {
+            re = b;
+        }
+
+        /**
+         * Real component.
+        */
+        float re;
+
+        /**
+         * Imaginary component.
+        */
+        float im;
+    };
+}
+
+inline constexpr dsp::Complex operator+(const dsp::Complex& a, float b) {
+    return dsp::Complex{ a.re + b, a.im };
+}
+
+inline constexpr dsp::Complex operator+(float a, const dsp::Complex& b) {
+    return dsp::Complex{ a + b.re, b.im };
+}
+
+inline constexpr dsp::Complex operator-(const dsp::Complex& a, float b) {
+    return dsp::Complex{ a.re - b, a.im };
+}
+
+inline constexpr dsp::Complex operator-(float a, const dsp::Complex& b) {
+    return dsp::Complex{ a - b.re, b.im };
+}
+
+inline constexpr dsp::Complex operator*(const dsp::Complex& a, float b) {
+    return dsp::Complex{ a.re*b, a.im*b };
+}
+
+inline constexpr dsp::Complex operator*(float a, const dsp::Complex& b) {
+    return dsp::Complex{ a*b.re, a*b.im };
+}
+
+inline constexpr dsp::Complex operator/(const dsp::Complex& a, float b) {
+    return dsp::Complex{ a.re/b, a.im/b };
+}
+
+inline constexpr dsp::Complex operator/(float a, const dsp::Complex& b) {
+    float denom = b.re*b.re + b.im*b.im;
+    return dsp::Complex{ a*b.re / denom, -a*b.im / denom };
+}
+
+inline constexpr dsp::Complex operator+(const dsp::Complex& a, const dsp::Complex& b) {
+    return dsp::Complex{ a.re + b.re, a.im + b.im };
+}
+
+inline constexpr dsp::Complex operator-(const dsp::Complex& a, const dsp::Complex& b) {
+    return dsp::Complex{ a.re - b.re, a.im - b.im };
+}
+
+inline constexpr dsp::Complex operator*(const dsp::Complex& a, const dsp::Complex& b) {
+    return dsp::Complex{ a.re*b.re - a.im*b.im, a.im*b.re + a.re*b.im };
+}
+
+inline constexpr dsp::Complex operator/(const dsp::Complex& a, const dsp::Complex& b) {
+    float denom = b.re*b.re + b.im*b.im;
+    return dsp::Complex{ (a.re*b.re + a.im*b.im) / denom, (a.im*b.re - a.re*b.im) / denom };
+}
+
+inline constexpr dsp::Complex operator""_j(unsigned long long value) {
+    return dsp::Complex{ 0.0f, (float)value };
+}
+
+inline constexpr dsp::Complex operator""_j(long double value) {
+    return dsp::Complex{ 0.0f, (float)value };
+}
