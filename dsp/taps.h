@@ -3,10 +3,12 @@
 namespace dsp {
     /**
      * Filter tap container.
+     * This class is NOT thread-safe.
     */
     template <class T>
     class Taps {
     public:
+        // Default constructor
         Taps();
         
         /**
@@ -23,11 +25,19 @@ namespace dsp {
         */
         Taps(T* taps, int count);
 
+        // Copy constructor
         Taps(const Taps<T>& b);
-        Taps(Taps<T>&& b);
-        ~Taps();
 
+        // Move constructor
+        Taps(Taps<T>&& b);
+
+        // Destructor
+        virtual ~Taps();
+
+        // Copy assignment operator
         Taps<T>& operator=(const Taps<T>& b);
+
+        // Move assignment operator
         Taps<T>& operator=(Taps<T>&& b);
 
         /**
@@ -35,21 +45,25 @@ namespace dsp {
         */
         inline int size() const { return count; }
 
-        inline operator const T*() const { return data; }
+        /**
+         * Get a pointer to the tap buffer.
+        */
+        inline const T* data() const { return buffer; }
 
-        inline operator bool() const { return data && count; }
+        // Cast to bool operator
+        inline operator bool() const { return count; }
 
         /**
          * Get a tap by index.
          * @param index Index of the tap
          * @return Tap at index.
         */
-        inline const T& operator[](int index) const { return data[index]; }
+        inline const T& operator[](int index) const { return buffer[index]; }
 
     protected:
         void reallocate(int count);
 
         int count = 0;
-        T* data = nullptr;
+        T* buffer = nullptr;
     };
 }

@@ -1,57 +1,53 @@
 #pragma once
 #include <mutex>
 #include <condition_variable>
-
-#define DSP_DEFAULT_BUFFER_SIZE 1000000
+#include "block.h"
 
 namespace dsp {
     /**
-     * Represents a class that can signal to its acting threads to stop. (TODO: Better name)
+     * Set of buffers and associated metadata.
     */
-    class Signaler {
-    public:
+    template <typename T>
+    struct BufferSet {
         /**
-         * Notify the sending thread that it should stop.
+         * Sample buffer for each channel.
         */
-        virtual void stopSender() = 0;
+        T** buffer;
 
         /**
-         * Clear the sender stop flag to allow restarting the sender thread.
+         * Number of channels, and thus channel buffers.
         */
-        virtual void clearSendStop() = 0;
+        size_t channels;
 
         /**
-         * Notify the receiving thread that it should stop.
+         * Maximum number of samples that each buffer can contain. This is assigned by Stream<T>::reserve().
         */
-        virtual void stopReceiver() = 0;
+        size_t capacity;
 
         /**
-         * Clear the receiver stop flag to allow restarting the sender thread.
+         * Number of valid samples in each buffer. This is assigned by Stream<T>::send().
         */
-        virtual void clearRecvStop() = 0;
+        size_t samples;
     };
 
     /**
      * Streams allow to exchange samples between two threads.
      * The samples have to be of type (u)int8_t, (u)int16_t, (u)int32_t, (u)int64_t, float, double or Complex.
+     * This class is thread-safe.
     */
     template <typename T>
-    class Stream : public Signaler {
+    class Stream : public StopNotifier {
     public:
-        /**
-         * Create a stream object.
-         * @param bufferSize Number of items in the buffers.
-        */
-        Stream(int channels = 1, int bufferSize = DSP_DEFAULT_BUFFER_SIZE);
+        // Default constructor
+        Stream();
 
+        // Destructor
         ~Stream();
 
         /**
          * Notify the sending thread that it should stop. clearSendStop() must be called once the thread is stopped to clear the stop flag.
         */
         void stopSender();
-
-        // TODO: More consistent naming
 
         /**
          * Clear the sender stop flag to allow restarting the sender thread.
@@ -69,36 +65,31 @@ namespace dsp {
         void clearRecvStop();
 
         /**
-         * Send a buffer of samples.
-         * @param count Number of samples in the send buffer.
-         * @return True if the sender thread must exist, false otherwise.
+         * Obtain a buffer set for sending.
+         * @param bufferSize Number of samples in each channel buffer.
+         * @param channels Number of channels.
+         * @return Buffer set to use for sending.
         */
-        bool send(int count);
+        const BufferSet<T>& reserve(size_t bufferSize, size_t channels = 1);
 
         /**
-         * Wait for buffer of samples. May also return in case of a signal to exit. ack() must be called as soon as the receive buffer has been entirely processed.
-         * @return Number of samples or -1 if the worker thread must exit.
+         * Send a set of sample buffers.
+         * @param count Number of valid samples in each channel buffer.
+         * @param channels Number of valid channels channels.
+         * @return False if the sender thread must exist, true otherwise.
         */
-        int recv();
+        bool send(size_t count);
 
         /**
-         * Acknowledge reception and processing of the samples. Allows sender thread to send a new buffer.
+         * Receive a set of sample buffers. May also return in case of a signal to exit, in which case the number of samples in the set is zero.
+         * @return Set of sample buffers.
         */
-        void ack();
+        const BufferSet<T>& recv();
 
         /**
-         * Get the sending buffer.
-         * @param channel ID of the channel to get the buffer for.
-         * @return Sending buffer.
+         * Flush the received buffer. Allows sender thread to send a new buffer.
         */
-        T* getSendBuffer(int channel = 0);
-
-        /**
-         * Get the receiving buffer.
-         * @param channel ID of the channel to get the buffer for.
-         * @return Sending buffer.
-        */
-        const T* getRecvBuffer(int channel = 0);
+        void flush();
 
     private:
         // Sender variables
@@ -106,13 +97,13 @@ namespace dsp {
         std::mutex sendMtx;
         bool canSend = true;
         bool stopSend = false;
-        T* sendBuf;
+        BufferSet<T>* sendSet = NULL;
 
         // Receiver variables
         std::condition_variable recvCV;
         std::mutex recvMtx;
-        int available = 0;
+        bool available = false;
         bool stopRecv = false;
-        T* recvBuf;
+        BufferSet<T>* recvSet = NULL;
     };
 }

@@ -4,6 +4,7 @@
 namespace dsp {
     /**
      * Complex 32bit floating-point number.
+     * This struct is NOT thread-safe.
     */
     struct Complex {
         // TODO: Allow construction from a float
@@ -29,7 +30,8 @@ namespace dsp {
             return sqrtf(re*re + im*im);
         }
 
-        void operator=(float b) {
+        // Assignment operator
+        inline void operator=(float b) {
             re = b;
         }
 
@@ -95,10 +97,10 @@ inline constexpr dsp::Complex operator/(const dsp::Complex& a, const dsp::Comple
     return dsp::Complex{ (a.re*b.re + a.im*b.im) / denom, (a.im*b.re - a.re*b.im) / denom };
 }
 
-inline constexpr dsp::Complex operator""_j(unsigned long long value) {
+inline constexpr dsp::Complex operator""j(unsigned long long value) {
     return dsp::Complex{ 0.0f, (float)value };
 }
 
-inline constexpr dsp::Complex operator""_j(long double value) {
+inline constexpr dsp::Complex operator""j(long double value) {
     return dsp::Complex{ 0.0f, (float)value };
 }

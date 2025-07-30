@@ -1,8 +1,12 @@
 #include "block.h"
+#include <stdexcept>
 
 namespace dsp {
-    Block::Block() {
+    Block::Block() {}
 
+    Block::~Block() {
+        // Stop the worker
+        stop();
     }
 
     void Block::start() {
@@ -53,7 +57,7 @@ namespace dsp {
         _running = false;
     }
 
-    bool Block::running() {
+    bool Block::running() const {
         // Acquire worker variables
         std::lock_guard<std::mutex> lck(workerMtx);
 
@@ -61,7 +65,7 @@ namespace dsp {
         return _running;
     }
 
-    void Block::registerInput(Signaler* input) {
+    void Block::registerInput(StopNotifier* input) {
         // Acquire worker variables
         std::lock_guard<std::mutex> lck(workerMtx);
 
@@ -69,14 +73,19 @@ namespace dsp {
         inputs.push_back(input);
     }
 
-    void Block::unregisterInput(Signaler* input) {
+    void Block::unregisterInput(StopNotifier* input) {
         // Acquire worker variables
         std::lock_guard<std::mutex> lck(workerMtx);
         
-        // TODO
+        // Find the notifier
+        auto it = std::find(inputs.begin(), inputs.end(), input);
+        if (it == inputs.end()) { return; }
+
+        // Remove it from the list
+        inputs.erase(it);
     }
 
-    void Block::registerOutput(Signaler* output) {
+    void Block::registerOutput(StopNotifier* output) {
         // Acquire worker variables
         std::lock_guard<std::mutex> lck(workerMtx);
 
@@ -84,15 +93,20 @@ namespace dsp {
         outputs.push_back(output);
     }
 
-    void Block::unregisterOutput(Signaler* output) {
+    void Block::unregisterOutput(StopNotifier* output) {
         // Acquire worker variables
         std::lock_guard<std::mutex> lck(workerMtx);
         
-        // TODO
+        // Find the notifier
+        auto it = std::find(outputs.begin(), outputs.end(), output);
+        if (it == outputs.end()) { return; }
+
+        // Remove it from the list
+        inputs.erase(it);
     }
 
     void Block::worker() {
         // Call the run function repeatedly
-        while (!run());
+        while (run());
     }
 }

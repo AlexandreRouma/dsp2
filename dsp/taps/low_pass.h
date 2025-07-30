@@ -2,11 +2,15 @@
 #include "../taps.h"
 
 namespace dsp::taps {
+    // TODO: Add option to only use an odd number of taps and an option to query the delay
+
     /**
      * Low-pass filter taps.
+     * This class is NOT thread-safe.
     */
     class LowPass : public Taps<float> {
     public:
+        // Default constructor
         LowPass();
 
         /**
@@ -54,8 +58,8 @@ namespace dsp::taps {
     private:
         void generate();
 
-        float cutoff;
-        float transWidth;
-        float samplerate;
+        float cutoff = 0.0f;
+        float transWidth = 0.0f;
+        float samplerate = 0.0f;
     };
 }

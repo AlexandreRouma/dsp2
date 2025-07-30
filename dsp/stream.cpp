@@ -1,20 +1,29 @@
-#include "Stream.h"
+#include "stream.h"
 #include "./complex.h"
-#include "stereo.h"
 
 namespace dsp {
     template <typename T>
-    Stream<T>::Stream(int channels, int bufferSize) {
-        // Allocate both send and receive buffers aligned by the size of the type
-        sendBuf = new T[bufferSize, sizeof(T)];
-        recvBuf = new T[bufferSize, sizeof(T)];
+    Stream<T>::Stream() {
+        // Allocate both send and receive buffer sets
+        sendSet = new BufferSet<T>;
+        recvSet = new BufferSet<T>;
+
+        // Initialize them to zero
+        sendSet->buffer = new T*;
+        *sendSet->buffer = NULL;
+        recvSet->buffer = new T*;
+        *recvSet->buffer = NULL;
+        sendSet->capacity = 0;
+        recvSet->capacity = 0;
+        sendSet->samples = 0;
+        recvSet->samples = 0;
     }
 
     template <typename T>
     Stream<T>::~Stream() {
-        // Free both send and receive buffers
-        delete[] sendBuf;
-        delete[] recvBuf;
+        // Free both send and receive buffer sets
+        delete sendSet;
+        delete recvSet;
     }
 
     template <typename T>
@@ -66,15 +75,46 @@ namespace dsp {
     }
 
     template <typename T>
-    bool Stream<T>::send(int count) {
+    const BufferSet<T>& Stream<T>::reserve(size_t bufferSize, size_t channels) {
         // Acquire the sender variables
         std::unique_lock<std::mutex> slck(sendMtx);
+
+        // If the capacity is too small or too large, reallocate 
+        if (bufferSize > sendSet->capacity || bufferSize < (sendSet->capacity >> 1) || sendSet->channels != channels) {
+            // Free all buffers
+            delete[] sendSet->buffer[0];
+            delete[] sendSet->buffer;
+
+            // TODO: Use volk instead
+
+            // Reallocate buffers
+            sendSet->buffer = new T*[channels];
+            T* base = new T[channels * bufferSize];
+            for (size_t i = 0; i < channels; i++) {
+                sendSet->buffer[i] = &base[bufferSize * i];
+            }
+        }
+
+        // Return the send buffer set
+        return *sendSet;
+    }
+
+    template <typename T>
+    bool Stream<T>::send(size_t count) {
+        // Acquire the sender variables
+        std::unique_lock<std::mutex> slck(sendMtx);
+
+        // Update the sample count
+        sendSet->samples = count;
 
         // Wait until the sender can send or is notified it should stop
         sendCV.wait(slck, [=](){ return canSend || stopSend; });
 
         // If asked to stop, return true
-        if (stopSend) { return true; }
+        if (stopSend) { return false; }
+
+        // If trying to send no samples, do nothing
+        if (!count) { return true; }
 
         // Mark that data can no longer be sent
         canSend = false;
@@ -82,38 +122,47 @@ namespace dsp {
         // Acquire the receiver variables
         std::unique_lock<std::mutex> rlck(recvMtx);
 
-        // Swap buffers
-        T* tmp = sendBuf;
-        sendBuf = recvBuf;
-        recvBuf = tmp;
+        // Swap the buffers sets
+        BufferSet<T>* tmp = sendSet;
+        sendSet = recvSet;
+        recvSet = tmp;
 
         // Release the sender variables
         slck.unlock();
 
-        // Set the number of items that are readable
-        available = count;
+        // Set the available flag
+        available = true;
 
         // Release the receiver variables
         rlck.unlock();
 
         // Notify the receiver thread that there are items available
         recvCV.notify_all();
+
+        // Return successfully
+        return true;
     }
 
     template <typename T>
-    int Stream<T>::recv() {
+    const BufferSet<T>& Stream<T>::recv() {
         // Acquire the receiver variables
         std::unique_lock<std::mutex> rlck(recvMtx);
 
         // Wait until there are items that are readable or the receiver is notified that it should stop
         recvCV.wait(rlck, [=](){ return available || stopRecv; });
 
-        // Return the number of readable items or -1 if the receiver should stop
-        return  stopRecv ? -1 : available;
+        // Reset the available flag
+        available = false;
+
+        // Zero out the number of samples if asked to stop
+        if (stopRecv) { recvSet->samples = 0; }
+
+        // Return the buffer set
+        return  *recvSet;
     }
 
     template <typename T>
-    void Stream<T>::ack() {
+    void Stream<T>::flush() {
         // Acquire the sender variables
         std::unique_lock<std::mutex> slck(sendMtx);
 
@@ -139,5 +188,4 @@ namespace dsp {
     template class Stream<float>;
     template class Stream<double>;
     template class Stream<Complex>;
-    template class Stream<Stereo>;
 }
