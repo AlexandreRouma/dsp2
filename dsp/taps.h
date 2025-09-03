@@ -1,4 +1,5 @@
 #pragma once
+#include <stddef.h>
 
 namespace dsp {
     /**
@@ -16,7 +17,7 @@ namespace dsp {
          * @param count Number of taps.
          * @param zero Zero out the taps.
         */
-        Taps(int count, bool zero = true);
+        Taps(int count, bool zero = false);
 
         /**
          * Create a tap bank from an array.
@@ -64,6 +65,6 @@ namespace dsp {
         void reallocate(int count);
 
         int count = 0;
-        T* buffer = nullptr;
+        T* buffer = NULL;
     };
 }
