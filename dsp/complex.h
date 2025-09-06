@@ -7,7 +7,27 @@ namespace dsp {
      * This struct is NOT thread-safe.
     */
     struct Complex {
-        // TODO: Allow construction from a float
+        // Default constructor
+        constexpr inline Complex() {}
+
+        /**
+         * Create a complex number from its real and imaginary components.
+         * @param re Real component.
+         * @param im Imaginary component.
+        */
+        constexpr inline Complex(float re, float im) {
+            this->re = re;
+            this->im = im;
+        }
+
+        /**
+         * Create a complex number from a real value.
+         * @param value Real component.
+        */
+        constexpr inline Complex(float value) {
+            re = value;
+            im = 0.0f;
+        }
 
         /**
          * Compute the conjugate of the Complex number.

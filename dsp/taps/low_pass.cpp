@@ -54,7 +54,7 @@ namespace dsp::taps {
 
     void LowPass::generate() {
         // Reallocate the buffer
-        reallocate(0 /*TODO: Tap count estimation*/);
+        realloc(0 /*TODO: Tap count estimation*/);
 
         // Generate taps
         // TODO
