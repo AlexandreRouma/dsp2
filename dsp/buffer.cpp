@@ -25,10 +25,10 @@ namespace dsp {
     template <class T>
     Buffer<T>::Buffer(const Buffer<T>& b) {
         // Allocate buffer
-        realloc(b.count);
+        realloc(b.capacity);
 
         // Copy data over
-        memcpy(buffer, b.buffer, b.count * sizeof(T));
+        memcpy(buffer, b.buffer, b.capacity * sizeof(T));
     }
 
     template <class T>
@@ -55,6 +55,9 @@ namespace dsp {
 
         // Copy over the data
         memcpy(buffer, b.buffer, capacity * sizeof(T));
+
+        // Return self
+        return *this;
     }
 
     template <class T>
@@ -69,22 +72,26 @@ namespace dsp {
         // Neutralize the original
         b.buffer = NULL;
         b.capacity = 0;
+
+        // Return self
+        return *this;
     }
 
     template <class T>
     void Buffer<T>::realloc(size_t size, ReallocBehavior behavior) {
         // Select the desired behavior
+        T* newbuf;
         switch (behavior) {
         case REALLOC_DISCARD:
             // Free the current buffer
             volk_free(buffer);
 
             // Allocate a new buffer
-            buffer = volk_malloc(size * sizeof(T));
+            buffer = (T*)volk_malloc(size * sizeof(T), volk_get_alignment());
             break;
         case REALLOC_KEEP:
             // Allocate a new buffer
-            T* newbuf = volk_malloc(size * sizeof(T));
+            newbuf = (T*)volk_malloc(size * sizeof(T), volk_get_alignment());
 
             // Copy the existing data
             memcpy(newbuf, buffer, std::min<size_t>(capacity, size));
@@ -97,13 +104,15 @@ namespace dsp {
             volk_free(buffer);
 
             // Allocate a new buffer
-            buffer = volk_malloc(size * sizeof(T));
+            buffer = (T*)volk_malloc(size * sizeof(T), volk_get_alignment());
 
             // Zero-out the new buffer
             memset(buffer, 0, size);
             break;
         case REALLOC_KEEP_AND_ZERO:
-
+            // TODO
+            return;
+            break;
         }
 
         // Update the current capacity

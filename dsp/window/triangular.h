@@ -2,9 +2,9 @@
 #include "../window.h"
 
 namespace dsp::window {
-    class Rectangular : public Window {
+    class Triangular : public Window {
     public:
-        Rectangular();
+        Triangular();
         
     private:
         void define();

@@ -1,20 +1,37 @@
 #pragma once
 #include <stdint.h>
-
-// TODO: Make something better, this sucks to use
-
+#include <functional>
 namespace dsp {
+    /**
+     * Window function.
+     * This class is NOT thread-safe.
+    */
     class Window {
     public:
+        // Default constructor
+        Window();
+
+        // Copy constructor
+        Window(const Window& b);
+
+        // Move constructor
+        Window(Window&& b);
+
         // Virtual destructor
         virtual ~Window();
+
+        // Copy assignement operator
+        Window& operator=(const Window& b);
+
+        // Move assignement operator
+        Window& operator=(Window&& b);
 
         /**
          * Compute the value of the window function.
          * @param x Point at which to compute the window at. Must be bounded between 0 and 1.
          * @return Value of the window bounded between 0 and 1.
         */
-        virtual float operator()(float x) const = 0;
+        inline float operator()(float x) { return def(x); }
 
         /**
          * Generate a window of a given length.
@@ -30,5 +47,21 @@ namespace dsp {
         */
         template <class T>
         void apply(T* data, size_t len) const;
+
+    protected:
+        /**
+         * Define the window function by setting the `def` member.
+         * MUST be overriden by all window functions.
+        */
+        virtual void define();
+
+        /**
+         * The window function itself.
+         * This member MUST be initialized by all window functions.
+        */
+        std::function<float(float)> def;
+
+    private:
+        static float undefined(float x);
     };
 }

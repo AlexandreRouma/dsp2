@@ -55,6 +55,8 @@ namespace dsp {
             re = b;
         }
 
+        // TODO: Define in-place operators
+
         /**
          * Real component.
         */

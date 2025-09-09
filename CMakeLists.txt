@@ -9,7 +9,6 @@ target_include_directories(${PROJECT_NAME} PRIVATE "/")
 
 target_compile_options(${PROJECT_NAME} PRIVATE /std:c++20)
 
-
 if (MSVC)
     # Lib path
     target_link_directories(${PROJECT_NAME} PUBLIC "C:/Program Files/PothosSDR/lib/")

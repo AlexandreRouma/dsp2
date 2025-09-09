@@ -1,7 +1,33 @@
 #pragma once
 #include <mutex>
 #include <condition_variable>
-#include "block.h"
+//#include "block.h"
+
+    /**
+     * Interface to be used by any blocking class (stream, mailbox, etc...) to allow cancelling an operation.
+    */
+    class StopNotifier {
+    public:
+        /**
+         * Notify the sending thread that it should stop.
+        */
+        virtual void stopSender() = 0;
+
+        /**
+         * Clear the sender stop flag to allow restarting the sender thread.
+        */
+        virtual void clearSendStop() = 0;
+
+        /**
+         * Notify the receiving thread that it should stop.
+        */
+        virtual void stopReceiver() = 0;
+
+        /**
+         * Clear the receiver stop flag to allow restarting the sender thread.
+        */
+        virtual void clearRecvStop() = 0;
+    };
 
 namespace dsp {
     /**
