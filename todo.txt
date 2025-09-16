@@ -1,6 +1,6 @@
-Create buffer class that replaces the BufferSet struct
+Replaces the BufferSet struct using the Buffer class
 
-Move the fixes from the SFAP library's stream.c to this one
+Move the fixes from the SFAP library's stream.c to this one?
 
 Think a lot about how multichannel streams are to be handled. Doing it all in one thread might not be possible so perhapse a built-in synchronisation system is worth it?
 

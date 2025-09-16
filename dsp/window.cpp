@@ -23,11 +23,17 @@ namespace dsp {
     Window& Window::operator=(const Window& b) {
         // Copy the definition
         def = b.def;
+
+        // Return self
+        return *this;
     }
 
     Window& Window::operator=(Window&& b) {
         // Move the definition
         def = std::move(b.def);
+
+        // Return self
+        return *this;
     }
 
     void Window::generate(float* data, size_t len) const {
@@ -53,7 +59,7 @@ namespace dsp {
         }
     }
     template void Window::apply(float* data, size_t len) const;
-    //template void Window::apply(Complex* data, size_t len) const;
+    template void Window::apply(Complex* data, size_t len) const;
 
     void Window::define() {
         // Ensure an error is thrown if the undefined window is used

@@ -55,7 +55,52 @@ namespace dsp {
             re = b;
         }
 
-        // TODO: Define in-place operators
+        // In-place real add operator
+        inline constexpr void operator+=(float b) {
+            re += b;
+        }
+
+        // In-place real subtract operator
+        inline constexpr void operator-=(float b) {
+            re -= b;
+        }
+
+        // In-place real multiply operator
+        inline constexpr void operator*=(float b) {
+            re *= b;
+            im *= b;
+        }
+
+        // In-place real divide operator
+        inline constexpr void operator/=(float b) {
+            re /= b;
+            im /= b;
+        }
+
+        // In-place complex add operator
+        inline constexpr void operator+=(const dsp::Complex& b) {
+            re += b.re;
+            im += b.im;
+        }
+
+        // In-place complex subtract operator
+        inline constexpr void operator-=(const dsp::Complex& b) {
+            re -= b.re;
+            im -= b.im;
+        }
+
+        // In-place real multiply operator
+        inline constexpr void operator*=(const dsp::Complex& b) {
+            re = re*b.re - im*b.im;
+            im = im*b.re + re*b.im;
+        }
+
+        // In-place real divide operator
+        inline constexpr void operator/=(const dsp::Complex& b) {
+            float denom = b.re*b.re + b.im*b.im;
+            re = (re*b.re + im*b.im) / denom;
+            im = (im*b.re - re*b.im) / denom;
+        }
 
         /**
          * Real component.

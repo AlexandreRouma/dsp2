@@ -6,6 +6,7 @@ namespace dsp {
      * Re-allocation behavior of buffers.
     */
     enum ReallocBehavior {
+    
         // Discard the exiting content of the buffer.
         REALLOC_DISCARD         = 0,
 
@@ -105,14 +106,14 @@ namespace dsp {
          * @param index Index of the tap
          * @return Tap at index.
         */
-        inline T& operator[](int index) { return buffer[index]; }
+        inline T& operator[](uintptr_t index) { return buffer[index]; }
 
         /**
          * Get a sample by index.
          * @param index Index of the tap
          * @return Tap at index.
         */
-        inline const T& operator[](int index) const { return buffer[index]; }
+        inline const T& operator[](uintptr_t index) const { return buffer[index]; }
 
     private:
         size_t capacity = 0;
