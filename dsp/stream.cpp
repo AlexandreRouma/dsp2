@@ -21,6 +21,12 @@ namespace dsp {
 
     template <typename T>
     Stream<T>::~Stream() {
+        // Free the buffers
+        delete[] sendSet->buffer[0];
+        delete[] sendSet->buffer;
+        delete[] recvSet->buffer[0];
+        delete[] recvSet->buffer;
+
         // Free both send and receive buffer sets
         delete sendSet;
         delete recvSet;
@@ -158,7 +164,7 @@ namespace dsp {
         if (stopRecv) { recvSet->samples = 0; }
 
         // Return the buffer set
-        return  *recvSet;
+        return *recvSet;
     }
 
     template <typename T>

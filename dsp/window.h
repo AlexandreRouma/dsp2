@@ -33,6 +33,8 @@ namespace dsp {
         */
         inline float operator()(float x) { return def(x); }
 
+        // TODO: Maybe have the windows function override the generate and apply functions for better performance
+
         /**
          * Generate a window of a given length.
          * @param data Samples buffer to write the window to.

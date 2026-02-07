@@ -102,7 +102,7 @@ namespace dsp {
          * Send a set of sample buffers.
          * @param count Number of valid samples in each channel buffer.
          * @param channels Number of valid channels channels.
-         * @return False if the sender thread must exist, true otherwise.
+         * @return False if the sender thread must exit, true otherwise.
         */
         bool send(size_t count);
 

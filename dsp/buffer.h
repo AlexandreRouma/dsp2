@@ -16,7 +16,7 @@ namespace dsp {
         // Zero out the buffer after reallocation.
         REALLOC_ZERO            = (1 << 1),
 
-        // Keep the existing content and zero out the excess new samples.
+        // Keep the existing content and zero out the additional new space if there is any.
         REALLOC_KEEP_AND_ZERO   = (REALLOC_KEEP | REALLOC_ZERO)
     };
 
@@ -60,8 +60,8 @@ namespace dsp {
         Buffer<T>& operator=(Buffer<T>&& b);
 
         /**
-         * Re-allocate the buffer conserving the existing data.
-         * @param size Number of samples.
+         * Re-allocate the buffer.
+         * @param size New number of samples.
          * @param behavior Specify the reallocaition behavior to either discard exiting samples, keep existing samples or zero out the buffer.
         */
         void realloc(size_t size, ReallocBehavior behavior = REALLOC_DISCARD);

@@ -1,5 +1,6 @@
 #include "buffer.h"
 #include "complex.h"
+#include <string.h>
 #include <volk/volk.h>
 #include <stdint.h>
 
@@ -89,6 +90,7 @@ namespace dsp {
             // Allocate a new buffer
             buffer = (T*)volk_malloc(size * sizeof(T), volk_get_alignment());
             break;
+
         case REALLOC_KEEP:
             // Allocate a new buffer
             newbuf = (T*)volk_malloc(size * sizeof(T), volk_get_alignment());
@@ -96,9 +98,13 @@ namespace dsp {
             // Copy the existing data
             memcpy(newbuf, buffer, std::min<size_t>(capacity, size));
 
+            // Free the current buffer
+            volk_free(buffer);
+
             // Replace buffer
             buffer = newbuf;
             break;
+
         case REALLOC_ZERO:
             // Free the current buffer
             volk_free(buffer);
@@ -109,9 +115,22 @@ namespace dsp {
             // Zero-out the new buffer
             memset(buffer, 0, size);
             break;
+
         case REALLOC_KEEP_AND_ZERO:
-            // TODO
-            return;
+            // Allocate a new buffer
+            newbuf = (T*)volk_malloc(size * sizeof(T), volk_get_alignment());
+
+            // Copy the existing data
+            memcpy(newbuf, buffer, std::min<size_t>(capacity, size));
+
+            // Free the current buffer
+            volk_free(buffer);
+
+            // If the new buffer is larger, zero out the extra data
+            if (size > capacity) { memset(&newbuf[capacity], 0, size - capacity ); }
+
+            // Replace buffer
+            buffer = newbuf;
             break;
         }
 

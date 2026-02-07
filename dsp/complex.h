@@ -127,7 +127,7 @@ inline constexpr dsp::Complex operator-(const dsp::Complex& a, float b) {
 }
 
 inline constexpr dsp::Complex operator-(float a, const dsp::Complex& b) {
-    return dsp::Complex{ a - b.re, b.im };
+    return dsp::Complex{ a - b.re, -b.im };
 }
 
 inline constexpr dsp::Complex operator*(const dsp::Complex& a, float b) {
