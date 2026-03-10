@@ -3,58 +3,92 @@
 namespace dsp::taps {
     LowPass::LowPass() {}
 
-    LowPass::LowPass(float cutoff, float transWidth, float samplerate) {
+    LowPass::LowPass(double cutoff, double transWidth, double samplerate, double gain, bool forceOdd) {
         // Save parameters
         this->cutoff = cutoff;
         this->transWidth = transWidth;
         this->samplerate = samplerate;
+        this->gain = gain;
+        this->forceOdd = forceOdd;
 
-        // Generate filter
+        // Generate the filter
         generate();
     }
 
-    float LowPass::getCutoff() {
+    double LowPass::getCutoff() {
+        // Return the cutoff
         return cutoff;
     }
 
-    void LowPass::setCutoff(float cutoff, float transWidth) {
-        // Update parameter
+    void LowPass::setCutoff(double cutoff, double transWidth) {
+        // Update the cutoff
         this->cutoff = cutoff;
 
         // If the transition width is given, update is as well
-        if (transWidth > 0) { this->transWidth = transWidth; }
+        if (!isnan(transWidth)) { this->transWidth = transWidth; }
 
-        // Regenerate filter
+        // Re-generate the filter
         generate();
     }
 
-    float LowPass::getTransWidth() {
+    double LowPass::getTransWidth() {
+        // Return the transition width
         return transWidth;
     }
 
-    void LowPass::setTransWidth(float transWidth) {
-        // Update parameter
+    void LowPass::setTransWidth(double transWidth) {
+        // Update the transition width
         this->transWidth = transWidth;
 
-        // Regenerate filter
+        // Re-generate the filter
         generate();
     }
 
-    float LowPass::getSamplerate() {
+    double LowPass::getSamplerate() {
+        // Return the sampling rate
         return samplerate;
     }
 
-    void LowPass::setSamplerate(float samplerate) {
-        // Update parameter
+    void LowPass::setSamplerate(double samplerate) {
+        // Update sampling rate
         this->samplerate = samplerate;
 
-        // Regenerate filter
+        // Re-generate filter
+        generate();
+    }
+
+    double LowPass::getGain() {
+        // Return the gain
+        return gain;
+    }
+
+    void LowPass::setGain(double gain) {
+        // Update the gain
+        this->gain = gain;
+
+        // Re-generate the filter
+        generate();
+    }
+
+    double LowPass::getForceOdd() {
+        // Return force odd
+        return forceOdd;
+    }
+
+    void LowPass::setForceOdd(bool forceOdd) {
+        // Update force odd
+        this->forceOdd = forceOdd;
+
+        // Re-generate the filter
         generate();
     }
 
     void LowPass::generate() {
-        // Reallocate the buffer
-        realloc(0 /*TODO: Tap count estimation*/);
+        // Estimate the number of required taps
+
+
+        // Reserve enough space in the buffer
+        // TODO
 
         // Generate taps
         // TODO

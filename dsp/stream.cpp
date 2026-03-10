@@ -1,5 +1,6 @@
 #include "stream.h"
 #include "./complex.h"
+#include <volk/volk.h>
 
 namespace dsp {
     template <typename T>

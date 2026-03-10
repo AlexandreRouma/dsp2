@@ -26,21 +26,21 @@ namespace dsp {
     template <class T>
     Buffer<T>::Buffer(const Buffer<T>& b) {
         // Allocate buffer
-        realloc(b.capacity);
+        realloc(b._capacity);
 
         // Copy data over
-        memcpy(buffer, b.buffer, b.capacity * sizeof(T));
+        memcpy(buffer, b.buffer, b._capacity * sizeof(T));
     }
 
     template <class T>
     Buffer<T>::Buffer(Buffer<T>&& b) {
         // Copy members
         buffer = b.buffer;
-        capacity = b.capacity;
+        _capacity = b._capacity;
 
         // Neutralize old instance
         b.buffer = NULL;
-        b.capacity = 0;
+        b._capacity = 0;
     }
 
     template <class T>
@@ -52,10 +52,10 @@ namespace dsp {
     template <class T>
     Buffer<T>& Buffer<T>::operator=(const Buffer<T>& b) {
         // Reallocate the buffer
-        realloc(b.capacity);
+        realloc(b._capacity);
 
         // Copy over the data
-        memcpy(buffer, b.buffer, capacity * sizeof(T));
+        memcpy(buffer, b.buffer, _capacity * sizeof(T));
 
         // Return self
         return *this;
@@ -68,11 +68,11 @@ namespace dsp {
 
         // Copy the state of the original
         buffer = b.buffer;
-        capacity = b.capacity;
+        _capacity = b._capacity;
 
         // Neutralize the original
         b.buffer = NULL;
-        b.capacity = 0;
+        b._capacity = 0;
 
         // Return self
         return *this;
@@ -96,7 +96,7 @@ namespace dsp {
             newbuf = (T*)volk_malloc(size * sizeof(T), volk_get_alignment());
 
             // Copy the existing data
-            memcpy(newbuf, buffer, std::min<size_t>(capacity, size));
+            memcpy(newbuf, buffer, std::min<size_t>(_capacity, size));
 
             // Free the current buffer
             volk_free(buffer);
@@ -121,13 +121,13 @@ namespace dsp {
             newbuf = (T*)volk_malloc(size * sizeof(T), volk_get_alignment());
 
             // Copy the existing data
-            memcpy(newbuf, buffer, std::min<size_t>(capacity, size));
+            memcpy(newbuf, buffer, std::min<size_t>(_capacity, size));
 
             // Free the current buffer
             volk_free(buffer);
 
             // If the new buffer is larger, zero out the extra data
-            if (size > capacity) { memset(&newbuf[capacity], 0, size - capacity ); }
+            if (size > _capacity) { memset(&newbuf[_capacity], 0, size - _capacity ); }
 
             // Replace buffer
             buffer = newbuf;
@@ -135,7 +135,7 @@ namespace dsp {
         }
 
         // Update the current capacity
-        capacity = size;
+        _capacity = size;
     }
 
     template <class T>
@@ -145,7 +145,7 @@ namespace dsp {
 
         // Mark the buffer as freed
         buffer = NULL;
-        capacity = 0;
+        _capacity = 0;
     }
 
     // Instantiate the class

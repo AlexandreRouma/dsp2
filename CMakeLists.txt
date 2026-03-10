@@ -9,6 +9,16 @@ target_include_directories(${PROJECT_NAME} PRIVATE "/")
 
 target_compile_options(${PROJECT_NAME} PRIVATE /std:c++20)
 
+# Set compiler options
+if (MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE /EHsc) # /O2 /Ob2
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_compile_options(${PROJECT_NAME} PRIVATE -O3)
+else ()
+    target_compile_options(${PROJECT_NAME} PRIVATE -O3)
+endif ()
+
+
 if (MSVC)
     # Lib path
     target_link_directories(${PROJECT_NAME} PUBLIC "C:/Program Files/PothosSDR/lib/")

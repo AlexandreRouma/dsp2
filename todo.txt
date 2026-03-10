@@ -7,3 +7,6 @@ Think a lot about how multichannel streams are to be handled. Doing it all in on
 Think about how blocks handle multi-channel streams. Maybe sometimes you want different behavior for each channel, so duplicating the DSP as is could be stupid
 
 Using multiple threads for audio may be slower than interleaved channels. It could also add latency since it has to be re-interleaved at the end of the DSP.
+
+Need a way to represent End-of-File for batch processing. That way sources could emit the flag, and sinks or processing threads could await it
+

@@ -1,6 +1,8 @@
 #pragma once
 #include <stddef.h>
 
+// TODO: Force inline the data stuff for maximal performance in FIR
+
 namespace dsp {
     /**
      * Re-allocation behavior of buffers.
@@ -72,7 +74,7 @@ namespace dsp {
          * @param behavior Specify the reallocaition behavior to either discard exiting samples, keep existing samples or zero out the buffer.
         */
         inline void reserve(size_t size, ReallocBehavior behavior = REALLOC_DISCARD) {
-            if (size > capacity || size < (capacity >> 1)) { realloc(size, behavior); }
+            if (size > _capacity || size < (_capacity >> 1)) { realloc(size, behavior); }
         }
 
         /**
@@ -81,9 +83,9 @@ namespace dsp {
         void free();
 
         /**
-         * Get the number of samples in the buffer.
+         * Get the number of samples that can be stored in the buffer.
         */
-        inline size_t size() const { return capacity; }
+        inline size_t capacity() const { return _capacity; }
 
         /**
          * Get a pointer to the samples.
@@ -99,24 +101,24 @@ namespace dsp {
          * Cast to bool.
          * @return True if the buffer contains samples, false if it is empty.
         */
-        inline operator bool() const { return capacity; }
+        inline operator bool() const { return _capacity; }
 
         /**
          * Access a sample by index.
-         * @param index Index of the tap
-         * @return Tap at index.
+         * @param index Index of the sample.
+         * @return Sample at index.
         */
         inline T& operator[](uintptr_t index) { return buffer[index]; }
 
         /**
          * Get a sample by index.
-         * @param index Index of the tap
-         * @return Tap at index.
+         * @param index Index of the sample.
+         * @return Sample at index.
         */
         inline const T& operator[](uintptr_t index) const { return buffer[index]; }
 
     private:
-        size_t capacity = 0;
+        size_t _capacity = 0;
         T* buffer = NULL;
     };
 }

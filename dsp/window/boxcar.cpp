@@ -1,11 +1,11 @@
-#include "rectangular.h"
+#include "boxcar.h"
 
 namespace dsp::window {
-    Rectangular::Rectangular() {
+    Boxcar::Boxcar() {
         define();
     }
 
-    void Rectangular::define() {
+    void Boxcar::define() {
         def = [](float x) { return 1.0f; };
     }
 }

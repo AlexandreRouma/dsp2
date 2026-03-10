@@ -100,7 +100,7 @@ namespace dsp {
 
         /**
          * Send a set of sample buffers.
-         * @param count Number of valid samples in each channel buffer.
+         * @param count Number of valid samples in each channel buffer. Zero indicates an End-of-Stream.
          * @param channels Number of valid channels channels.
          * @return False if the sender thread must exit, true otherwise.
         */
