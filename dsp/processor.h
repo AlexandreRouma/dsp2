@@ -6,6 +6,10 @@ namespace dsp {
     template <class T_IN, class T_OUT>
     class SISOProcessor {
     public:
+        inline SISOProcessor() {}
+
+        inline SISOProcessor(SISOProcessor&& b) {}
+
         virtual size_t process(const T_IN* in, T_OUT* out, size_t count) = 0;
 
         inline size_t processSafe(const T_IN* in, T_OUT* out, size_t count) {

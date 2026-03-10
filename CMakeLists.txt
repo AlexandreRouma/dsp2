@@ -7,15 +7,15 @@ add_executable(${PROJECT_NAME} ${SRC})
 
 target_include_directories(${PROJECT_NAME} PRIVATE "/")
 
-target_compile_options(${PROJECT_NAME} PRIVATE /std:c++20)
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
 
 # Set compiler options
 if (MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /EHsc) # /O2 /Ob2
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    target_compile_options(${PROJECT_NAME} PRIVATE -O3)
+    target_compile_options(${PROJECT_NAME} PRIVATE -O3 -Wno-literal-suffix)
 else ()
-    target_compile_options(${PROJECT_NAME} PRIVATE -O3)
+    target_compile_options(${PROJECT_NAME} PRIVATE -O3 -Wno-literal-suffix)
 endif ()
 
 

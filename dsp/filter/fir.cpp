@@ -1,5 +1,6 @@
 #include "fir.h"
 #include "../complex.h"
+#include <string.h>
 #include <volk/volk.h>
 
 namespace dsp::filter {
@@ -83,6 +84,7 @@ namespace dsp::filter {
         return count;
     }
 
+    // Instantiate the class
     template class FIR<float, float>;
     template class FIR<Complex, float>;
     template class FIR<Complex, Complex>;

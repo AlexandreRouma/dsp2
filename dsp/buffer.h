@@ -1,5 +1,6 @@
 #pragma once
 #include <stddef.h>
+#include <stdint.h>
 
 // TODO: Force inline the data stuff for maximal performance in FIR
 
@@ -102,6 +103,18 @@ namespace dsp {
          * @return True if the buffer contains samples, false if it is empty.
         */
         inline operator bool() const { return _capacity; }
+
+        /**
+         * Cast to sample pointer.
+         * @return Pointer to the samples
+        */
+        inline operator T*() { return buffer; }
+
+        /**
+         * Cast to const sample pointer.
+         * @return Const pointer to the samples
+        */
+        inline operator const T*() const { return buffer; }
 
         /**
          * Access a sample by index.

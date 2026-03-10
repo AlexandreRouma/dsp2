@@ -1,5 +1,6 @@
 #include "file.h"
 #include "../complex.h"
+#include <stdint.h>
 
 // TODO: Thread safety
 

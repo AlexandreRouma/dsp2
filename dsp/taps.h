@@ -37,7 +37,7 @@ namespace dsp {
          * Get the number of taps.
          * @return Number of taps.
         */
-        inline size_t size() { return _size; }
+        inline size_t size() const { return _size; }
 
         /**
          * Get a pointer to the taps.

@@ -1,10 +1,9 @@
 #pragma once
-#include "../processor.h"
-#include "../worker.h"
+#include <stddef.h>
 #include "../complex.h"
 
 namespace dsp::demod {
-    class FM : SISOProcessor<Complex, float> {
+    class FM {
     public:
         // Default constructor
         FM();
@@ -60,6 +59,4 @@ namespace dsp::demod {
         float gain = 0.0f;
         float lastPhase = 0.0f;
     };
-
-    using FMw = SISOWorker<FM, Complex, float>;
 }

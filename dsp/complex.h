@@ -8,26 +8,26 @@ namespace dsp {
     */
     struct Complex {
         // Default constructor
-        constexpr inline Complex() {}
+        inline Complex() {}
 
         /**
          * Create a complex number from its real and imaginary components.
          * @param re Real component.
          * @param im Imaginary component.
         */
-        constexpr inline Complex(float re, float im) {
-            this->re = re;
-            this->im = im;
-        }
+        constexpr inline Complex(float re, float im) :
+            re(re),
+            im(im)
+        {}
 
         /**
          * Create a complex number from a real value.
          * @param value Real component.
         */
-        constexpr inline Complex(float value) {
-            re = value;
-            im = 0.0f;
-        }
+        constexpr inline Complex(float value) :
+            re(value),
+            im(0.0f)
+        {}
 
         /**
          * Compute the conjugate of the Complex number.
@@ -112,6 +112,18 @@ namespace dsp {
         */
         float im;
     };
+}
+
+inline constexpr bool operator==(const dsp::Complex& a, const dsp::Complex& b) {
+    return a.re == b.re && a.im == b.im;
+}
+
+inline constexpr bool operator==(const dsp::Complex& a, float b) {
+    return a.im == 0.0f && a.re == b;
+}
+
+inline constexpr bool operator==(float a, const dsp::Complex& b) {
+    return b.im == 0.0f && b.re == a;
 }
 
 inline constexpr dsp::Complex operator+(const dsp::Complex& a, float b) {

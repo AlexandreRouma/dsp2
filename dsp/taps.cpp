@@ -1,6 +1,7 @@
 #include "taps.h"
 #include "complex.h"
 #include <utility>
+#include <string.h>
 
 namespace dsp {
     template <class T>
